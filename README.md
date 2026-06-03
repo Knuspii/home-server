@@ -3,9 +3,18 @@ A self-hosted home server setup running on Debian with Docker Compose.
 
 ---
 
-## 🚀 Overview
+## ⚙️ Overview
 This stack is designed for a home production environment:
 
+## HP EliteDesk 800 G3 DM 35W
+- OS: Debian GNU/Linux 13
+- CPU: Intel(R) Core(TM) i5-6500T (4) @ 3.10 GHz
+- RAM: 8GB DDR4
+- Disk1: SSD 120GB 
+- Disk2: NVMe 256GB
+
+
+## Selfhosted Apps
 | Service | Description |
 |--------|-------------|
 | 🧠 Homepage | Dashboard |
