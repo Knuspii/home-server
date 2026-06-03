@@ -1,0 +1,189 @@
+# Docker Compose Stack for my Home-Server, Knuspii
+# Backups are automatically done with a bash script
+# Container health is checked with a bash script
+
+x-defaults: &defaults
+  restart: unless-stopped
+  tmpfs:
+    - /tmp
+  logging:
+    driver: json-file
+    options:
+      max-size: "5m"
+      max-file: "1"
+
+services:
+  # --- Homepage (Dashboard) ---
+  homepage:
+    container_name: homepage
+    image: ghcr.io/gethomepage/homepage:latest
+    <<: *defaults
+    ports:
+      - "80:3000"
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - HOMEPAGE_ALLOWED_HOSTS=192.168.178.100,localhost,home-server
+    volumes:
+      - ./homepage:/app/config
+    env_file:
+      - .env
+
+
+  # --- AdGuard Home (DNS & Adblock) ---
+  adguard:
+    container_name: adguardhome
+    image: adguard/adguardhome:latest
+    <<: *defaults
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"
+      - "5000:80/tcp"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ./adguard/work:/opt/adguardhome/work
+      - ./adguard/conf:/opt/adguardhome/conf
+
+  # --- Filebrowser (Files) ---
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser:latest
+    <<: *defaults
+    ports:
+      - "5001:8080"
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /mnt/data:/srv
+      - ./filebrowser/filebrowser.db:/filebrowser.db
+      - ./filebrowser/settings.json:/config/settings.json
+    healthcheck:
+      disable: true
+
+
+  # --- Wallos (Finanzen) ---
+  wallos:
+    container_name: wallos
+    image: bellamy/wallos:latest
+    <<: *defaults
+    ports:
+      - "5002:80"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ./wallos:/var/www/html/db
+      - ./wallos/logos:/var/www/html/images/uploads/logos
+
+
+  # --- MiniFlux (RSS NEWS) ---
+  miniflux:
+    image: miniflux/miniflux:latest
+    container_name: miniflux
+    <<: *defaults
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    ports:
+      - "5003:8080"
+    environment:
+      - TZ=${TZ}
+      - DATABASE_URL=postgres://${MINIFLUX_POSTGRES_USER}:${MINIFLUX_POSTGRES_PASSWORD}@miniflux-db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - POLLING_FREQUENCY=180
+      - CLEANUP_ARCHIVE_READ_DAYS=3
+      - CLEANUP_ARCHIVE_UNREAD_DAYS=5
+      - DISABLE_API=true
+  miniflux-db:
+    image: postgres:18
+    container_name: miniflux-db
+    <<: *defaults
+    environment:
+      - POSTGRES_USER=${MINIFLUX_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASSWORD}
+      - POSTGRES_DB=miniflux
+    volumes:
+      # See https://hub.docker.com/_/postgres#pgdata
+      - ./miniflux:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      start_period: 30s
+
+
+  # --- Vikunja (Tasks) ---
+  vikunja:
+    container_name: vikunja
+    image: docker.io/vikunja/vikunja:latest
+    user: "1000:1000"
+    <<: *defaults
+    depends_on:
+      mailrise:
+        condition: service_started
+    ports:
+      - "5004:3456"
+    environment:
+      - TZ=${TZ}
+      - VIKUNJA_SERVICE_SECRET=${VIKUNJA_SECRET}
+      - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5004
+      - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
+      - VIKUNJA_MAILER_ENABLED=true
+      - VIKUNJA_MAILER_HOST=mailrise
+      - VIKUNJA_MAILER_FORCESSL=false
+      - VIKUNJA_MAILER_PORT=8025
+      - VIKUNJA_MAILER_USERNAME=todo@knuspii.net
+      - VIKUNJA_DATABASE_TYPE=sqlite
+      - VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db
+    volumes:
+      - ./vikunja:/app/vikunja/files:Z
+  # --- Mailrise (SMTP relay) ---
+  mailrise:
+    container_name: mailrise
+    image: docker.io/yoryan/mailrise:latest
+    <<: *defaults
+    ports:
+      - "8025:8025"
+    volumes:
+      - ./mailrise/mailrise.conf:/etc/mailrise.conf:ro,Z
+
+
+  # --- Glances (Monitoring) ---
+  glances:
+    container_name: glances
+    image: nicolargo/glances:latest-full
+    <<: *defaults
+    ports:
+      - "5005:61208"
+    environment:
+      - TZ=${TZ}
+      - GLANCES_OPT=-w -B 0.0.0.0 --config /etc/glances/glances.conf
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./glances/glances.conf:/etc/glances/glances.conf:ro
+    pid: host
+    read_only: true
+
+
+  # --- TTYD (Shell for testing) ---
+  ttyd:
+    container_name: ttyd
+    image: tsl0922/ttyd:latest
+    <<: *defaults
+    ports:
+      - "5006:7681"
+    environment:
+      - TZ=${TZ}
+    command: >
+      bash -c "
+      echo 'PS1=\"\\[\\e[1;32m\\]\\u@\\h \\[\\e[1;34m\\]\\w \\[\\e[1;31m\\]\\\\$ \\[\\e[0m\\]\"' > /root/.bashrc &&
+      ttyd -W bash
+      "
+
+networks:
+  default:
+    name: homeserver_network
+    driver: bridge
