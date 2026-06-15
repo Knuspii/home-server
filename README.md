@@ -17,14 +17,15 @@ This stack is designed for a home production environment:
 ## Selfhosted Apps
 | Service | Description |
 |--------|-------------|
-| 🧠 Homepage | Dashboard |
+| 🧠 Glance | Dashboard |
 | 🌐 AdGuard Home | DNS Adblock |
 | 📁 Filebrowser | File Management |
 | 💰 Wallos | Finance Tracking |
-| 📰 Miniflux + PostgreSQL | RSS Reader |
 | ✅ Vikunja | Task Management |
+| 📧 Mailrise | Get Mails |
 | 📡 Glances | Monitoring |
 | 🧪 TTYD | Shell Testing |
+| 📦 mc-server | Minecraft Server |
 
 ## Scripts
 | Script | Purpose |
@@ -39,13 +40,13 @@ This stack is designed for a home production environment:
 ## ⚙️ System Setup (Debian)
 ### Base tools
 ```bash
-sudo apt install htop ssh rsync ncdu curl tree jq smartmontools
+sudo apt install htop ssh rsync ncdu curl tree jq smartmontools fastfetch
 ```
 
 ## 📊 Notes
 - Designed for local network use
 - Exposed services should be secured via reverse proxy or VPN
-- Secrets are stored in `.env` (not committed)
+- Secrets are stored in `.env` (not committed obviously)
 
 ---
 
