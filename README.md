@@ -10,9 +10,11 @@ This stack is designed for a home production environment:
 - OS: Debian GNU/Linux 13
 - CPU: Intel(R) Core(TM) i5-6500T (4) @ 3.10 GHz
 - RAM: 8GB DDR4
-- Disk1: SSD 120GB 
-- Disk2: NVMe 256GB
+- Disk1: SSD 128GB 
+- Disk2: SSD 128GB
+- Disk3: SSD 128GB
 
+Disk1 & Disk2 = RAID1
 
 ## Selfhosted Apps
 | Service | Description |
@@ -40,7 +42,7 @@ This stack is designed for a home production environment:
 ## ⚙️ System Setup (Debian)
 ### Base tools
 ```bash
-sudo apt install htop ssh rsync ncdu curl tree jq smartmontools fastfetch
+sudo apt install htop ssh rsync ncdu curl tree jq smartmontools fastfetch at mdadm
 ```
 
 ## 📊 Notes
