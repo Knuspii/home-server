@@ -10,16 +10,6 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 
 ---
 
-## Specs
-- **HP EliteDesk 800 G3 DM 35W**
-- OS: Debian GNU/Linux 13
-- CPU: Intel(R) Core(TM) i5-6500T (4) @ 3.10 GHz
-- RAM: 8GB DDR4
-- Disk1: SSD 128GB
-- Disk2: SSD 128GB
-- Disk3: SSD 128GB
-- Disk2 & Disk3 = RAID1
-
 ## Selfhosted Apps
 | Service | Description |
 |--------|-------------|
