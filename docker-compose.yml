@@ -1,6 +1,8 @@
 # Docker Compose Stack for my Home-Server, Knuspii
 # Backups are automatically done with a bash script
-# Container health is checked with a bash script
+# Cleanups are automatically done with a bash script
+# Disks health is checked with a bash script
+# Containers health is checked with a bash script
 
 x-defaults: &defaults
   restart: unless-stopped
@@ -14,22 +16,16 @@ x-defaults: &defaults
 
 services:
   # --- Homepage (Dashboard) ---
-  homepage:
-    container_name: homepage
-    image: ghcr.io/gethomepage/homepage:latest
+  glance:
+    container_name: glance
+    image: glanceapp/glance:latest
     <<: *defaults
     ports:
-      - "80:3000"
+      - "80:8080"
+    volumes:
+      - ./glance:/app/config
     environment:
       - TZ=${TZ}
-      - PUID=1000
-      - PGID=1000
-      - HOMEPAGE_ALLOWED_HOSTS=192.168.178.100,localhost,home-server
-    volumes:
-      - ./homepage:/app/config
-    env_file:
-      - .env
-
 
   # --- AdGuard Home (DNS & Adblock) ---
   adguard:
@@ -47,6 +43,7 @@ services:
       - ./adguard/work:/opt/adguardhome/work
       - ./adguard/conf:/opt/adguardhome/conf
 
+
   # --- Filebrowser (Files) ---
   filebrowser:
     container_name: filebrowser
@@ -54,7 +51,7 @@ services:
     <<: *defaults
     ports:
       - "5001:8080"
-    environment:
+    environment :
       - TZ=${TZ}
       - PUID=1000
       - PGID=1000
@@ -80,40 +77,6 @@ services:
       - ./wallos/logos:/var/www/html/images/uploads/logos
 
 
-  # --- MiniFlux (RSS NEWS) ---
-  miniflux:
-    image: miniflux/miniflux:latest
-    container_name: miniflux
-    <<: *defaults
-    depends_on:
-      miniflux-db:
-        condition: service_healthy
-    ports:
-      - "5003:8080"
-    environment:
-      - TZ=${TZ}
-      - DATABASE_URL=postgres://${MINIFLUX_POSTGRES_USER}:${MINIFLUX_POSTGRES_PASSWORD}@miniflux-db/miniflux?sslmode=disable
-      - RUN_MIGRATIONS=1
-      - POLLING_FREQUENCY=180
-      - CLEANUP_ARCHIVE_READ_DAYS=3
-      - CLEANUP_ARCHIVE_UNREAD_DAYS=5
-      - DISABLE_API=true
-  miniflux-db:
-    image: postgres:18
-    container_name: miniflux-db
-    <<: *defaults
-    environment:
-      - POSTGRES_USER=${MINIFLUX_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASSWORD}
-      - POSTGRES_DB=miniflux
-    volumes:
-      # See https://hub.docker.com/_/postgres#pgdata
-      - ./miniflux:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "miniflux"]
-      interval: 10s
-      start_period: 30s
-
 
   # --- Vikunja (Tasks) ---
   vikunja:
@@ -125,11 +88,11 @@ services:
       mailrise:
         condition: service_started
     ports:
-      - "5004:3456"
+      - "5003:3456"
     environment:
       - TZ=${TZ}
       - VIKUNJA_SERVICE_SECRET=${VIKUNJA_SECRET}
-      - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5004
+      - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5003
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
       - VIKUNJA_MAILER_ENABLED=true
       - VIKUNJA_MAILER_HOST=mailrise
@@ -145,6 +108,8 @@ services:
     container_name: mailrise
     image: docker.io/yoryan/mailrise:latest
     <<: *defaults
+    dns:
+      - 1.1.1.1
     ports:
       - "8025:8025"
     volumes:
@@ -157,7 +122,7 @@ services:
     image: nicolargo/glances:latest-full
     <<: *defaults
     ports:
-      - "5005:61208"
+      - "5004:61208"
     environment:
       - TZ=${TZ}
       - GLANCES_OPT=-w -B 0.0.0.0 --config /etc/glances/glances.conf
@@ -174,7 +139,7 @@ services:
     image: tsl0922/ttyd:latest
     <<: *defaults
     ports:
-      - "5006:7681"
+      - "5005:7681"
     environment:
       - TZ=${TZ}
     command: >
@@ -182,6 +147,29 @@ services:
       echo 'PS1=\"\\[\\e[1;32m\\]\\u@\\h \\[\\e[1;34m\\]\\w \\[\\e[1;31m\\]\\\\$ \\[\\e[0m\\]\"' > /root/.bashrc &&
       ttyd -W bash
       "
+    cpus: "0.50"
+    mem_limit: "512m"
+
+  minecraft-srv:
+    container_name: minecraft-srv
+    image: itzg/minecraft-server:latest
+    <<: *defaults
+    ports:
+      - "25565:25565"
+    environment:
+      - EULA=TRUE
+      - TYPE=FABRIC
+      - VERSION=1.20.1
+      - MEMORY=4G
+      - TZ=${TZ}
+      # Old Docker-Sleeper (for < 1.21.2)
+      - ENABLE_AUTOPAUSE=true
+      - AUTOPAUSE_TIMEOUT_EST=1800
+    volumes:
+      - ./minecraft-srv:/data
+    mem_limit: "4500m"
+    cpus: "2.0"
+
 
 networks:
   default:

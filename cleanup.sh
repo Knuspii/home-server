@@ -25,26 +25,24 @@ if command -v apt-get &> /dev/null; then
     apt-get update > /dev/null
     apt-get autoclean -y > /dev/null
     apt-get clean
-    apt-get autoremove -y > /dev/null
 fi
 
-# 2. Containers (Docker / Podman)
+# 2. Containers (Docker)
 if command -v docker &> /dev/null; then
     echo "[DOCKER] Cleaning unused resources..."
     docker system prune -a -f > /dev/null
-elif command -v podman &> /dev/null; then
-    echo "[PODMAN] Cleaning unused resources... (as podman user)"
-    sudo user -u podman podman system prune -a -f > /dev/null
+    docker volume prune -f > /dev/null
+    docker network prune -f > /dev/null
 fi
 
 # 3. System logs (journald)
-echo "[LOGS] Vacuum logs older than 7 days..."
-journalctl --vacuum-time=7d > /dev/null
+echo "[LOGS] Vacuum logs older than 15 days..."
+journalctl --vacuum-time=15d > /dev/null
 
 # 4. Temp files (safe cleanup)
-echo "[TEMP] Cleaning old temp files..."
-find /tmp -mindepth 1 -mtime +7 -delete 2>/dev/null || true
-find /var/tmp -mindepth 1 -mtime +7 -delete 2>/dev/null || true
+echo "[TEMP] Cleaning temp files older than 15 days..."
+find /tmp -mindepth 1 -mtime +15 -delete 2>/dev/null || true
+find /var/tmp -mindepth 1 -mtime +15 -delete 2>/dev/null || true
 
 echo "--- Cleanup finished ---"
 
@@ -57,6 +55,3 @@ else
     RECLAIMED_HUMAN=$(numfmt --to=iec --suffix=B "$((RECLAIMED_KB * 1024))")
     echo "Space reclaimed: $RECLAIMED_HUMAN"
 fi
-
-echo "Current disk usage:"
-df -h /

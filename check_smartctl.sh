@@ -3,7 +3,7 @@
 # Run weekly via cron:
 # 0 0 * * 7 bash /srv/check_smartctl.sh
 
-DISKS=("/dev/sda" "/dev/sdb")
+DISKS=("/dev/sda" "/dev/sdb" "/dev/sdc")
 
 #--- ROOT-CHECK ---
 if [ "$EUID" -ne 0 ]; then
@@ -12,10 +12,10 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 for DISK in "${DISKS[@]}"; do
-HEALTH=$(smartctl -H "$DISK" 2>/dev/null | grep -o "PASSED")
+HEALTH=$(/usr/sbin/smartctl -H "$DISK" 2>/dev/null | grep -o "PASSED")
 
 if [ "$HEALTH" != "PASSED" ]; then
-    bash /srv/send_gotify.sh "$DISK $HEALTH"
+    bash /srv/send_pushover.sh "$DISK UNHEALTHY"
 else
     echo "$DISK $HEALTH"
 fi
