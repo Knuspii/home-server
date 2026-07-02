@@ -32,6 +32,8 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | check_docker.sh | Docker health check |
 | send_pushover.sh | Send messages to myself via Pushover (private) |
 
+I also use [HomeLab-Doctor](https://github.com/Knuspii/HomeLab-Doctor)
+
 ---
 
 ## ⚙️ System Setup (Debian)
