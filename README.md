@@ -20,7 +20,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | ✅ Vikunja | Task Management |
 | 📧 Mailrise | Pass Mails |
 | 📡 Glances | Monitoring |
-| 🧪 TTYD | Shell Testing |
+| 🧪 n8n | Automation |
 | 📦 minecraft-srv | Minecraft Server |
 
 ## Scripts
