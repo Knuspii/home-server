@@ -77,7 +77,6 @@ services:
       - ./wallos/logos:/var/www/html/images/uploads/logos
 
 
-
   # --- Vikunja (Tasks) ---
   vikunja:
     container_name: vikunja
@@ -94,6 +93,8 @@ services:
       - VIKUNJA_SERVICE_SECRET=${VIKUNJA_SECRET}
       - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5003
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
+      #- VIKUNJA_WEBHOOKS_ENABLED=true
+      #- VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
       - VIKUNJA_MAILER_ENABLED=true
       - VIKUNJA_MAILER_HOST=mailrise
       - VIKUNJA_MAILER_FORCESSL=false
@@ -133,22 +134,49 @@ services:
     read_only: true
 
 
-  # --- TTYD (Shell for testing) ---
-  ttyd:
-    container_name: ttyd
-    image: tsl0922/ttyd:latest
+  # --- n8n (Workflow Automation) ---
+  n8n:
+    container_name: n8n
+    image: n8nio/n8n:latest
     <<: *defaults
     ports:
-      - "5005:7681"
+      - "5005:5678"
     environment:
       - TZ=${TZ}
-    command: >
-      bash -c "
-      echo 'PS1=\"\\[\\e[1;32m\\]\\u@\\h \\[\\e[1;34m\\]\\w \\[\\e[1;31m\\]\\\\$ \\[\\e[0m\\]\"' > /root/.bashrc &&
-      ttyd -W bash
-      "
-    cpus: "0.50"
-    mem_limit: "512m"
+      - GENERIC_TIMEZONE=${TZ}
+      - N8N_HOST=n8n.home-server
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
+      - NODE_FUNCTION_ALLOW_BUILTIN=child_process
+    volumes:
+      - ./n8n:/home/node/.n8n
+
+
+# --- Aria2 (Download Manager) ---
+  aria2:
+    container_name: aria2
+    image: p3terx/aria2-pro
+    <<: *defaults
+    ports:
+      - "6800:6800"
+    environment:
+      - TZ=${TZ}
+      - RPC_SECRET=${ARIA2_SECRET}
+      - RPC_PORT=6800
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./aria2/config:/config
+      - /mnt/data/Downloads:/downloads
+  # --- AriaNg (WebUI) ---
+  ariang:
+    container_name: ariang
+    image: p3terx/ariang
+    <<: *defaults
+    ports:
+      - "5006:6880"
+
 
   minecraft-srv:
     container_name: minecraft-srv
@@ -169,7 +197,6 @@ services:
       - ./minecraft-srv:/data
     mem_limit: "4500m"
     cpus: "2.0"
-
 
 networks:
   default:

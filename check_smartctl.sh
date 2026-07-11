@@ -3,6 +3,10 @@
 # Run weekly via cron:
 # 0 0 * * 7 bash /srv/check_smartctl.sh
 
+LOGFILE="/srv/logs/smartctl.log"
+exec > >(tee -a "$LOGFILE") 2>&1
+date
+
 DISKS=("/dev/sda" "/dev/sdb" "/dev/sdc")
 
 #--- ROOT-CHECK ---
