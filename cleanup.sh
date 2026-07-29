@@ -5,15 +5,15 @@
 
 set -euo pipefail
 
-rm /srv/logs/* || true
-LOGFILE="/srv/logs/cleanup.log"
-exec > >(tee -a "$LOGFILE") 2>&1
-date
-
 if [ "$EUID" -ne 0 ]; then
   echo "Error: This script must be run as root."
   exit 1
 fi
+
+rm /srv/logs/* || true
+LOGFILE="/srv/logs/cleanup.log"
+exec > >(tee -a "$LOGFILE") 2>&1
+date
 
 # Get free disk space (KB)
 get_free_space() {

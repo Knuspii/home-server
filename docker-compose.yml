@@ -63,7 +63,7 @@ services:
       disable: true
 
 
-  # --- Wallos (Finanzen) ---
+  # --- Wallos (Finanz) ---
   wallos:
     container_name: wallos
     image: bellamy/wallos:latest
@@ -151,31 +151,24 @@ services:
       - NODE_FUNCTION_ALLOW_BUILTIN=child_process
     volumes:
       - ./n8n:/home/node/.n8n
+    mem_limit: "2000m"
+    cpus: "2.0"
 
 
-# --- Aria2 (Download Manager) ---
-  aria2:
-    container_name: aria2
-    image: p3terx/aria2-pro
+  # --- Dozzle (Docker Logs) ---
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
     <<: *defaults
+    restart: unless-stopped
     ports:
-      - "6800:6800"
+      - "5006:8080"
     environment:
       - TZ=${TZ}
-      - RPC_SECRET=${ARIA2_SECRET}
-      - RPC_PORT=6800
-      - PUID=1000
-      - PGID=1000
+      - DOZZLE_NO_ANALYTICS=true
     volumes:
-      - ./aria2/config:/config
-      - /mnt/data/Downloads:/downloads
-  # --- AriaNg (WebUI) ---
-  ariang:
-    container_name: ariang
-    image: p3terx/ariang
-    <<: *defaults
-    ports:
-      - "5006:6880"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dozzle:/data
 
 
   minecraft-srv:
@@ -185,11 +178,11 @@ services:
     ports:
       - "25565:25565"
     environment:
+      - TZ=${TZ}
       - EULA=TRUE
       - TYPE=FABRIC
       - VERSION=1.20.1
       - MEMORY=4G
-      - TZ=${TZ}
       # Old Docker-Sleeper (for < 1.21.2)
       - ENABLE_AUTOPAUSE=true
       - AUTOPAUSE_TIMEOUT_EST=1800
