@@ -2,7 +2,7 @@
 # Backups are automatically done with a bash script
 # Cleanups are automatically done with a bash script
 # Disks health is checked with a bash script
-# Containers health is checked with a bash script
+# Containers uptime is checked with a bash script
 
 x-defaults: &defaults
   restart: unless-stopped
@@ -26,6 +26,9 @@ services:
       - ./glance:/app/config
     environment:
       - TZ=${TZ}
+      - TOKEN_FILE=/app/config/secret
+    read_only: true
+
 
   # --- AdGuard Home (DNS & Adblock) ---
   adguard:
@@ -40,27 +43,21 @@ services:
     environment:
       - TZ=${TZ}
     volumes:
-      - ./adguard/work:/opt/adguardhome/work
-      - ./adguard/conf:/opt/adguardhome/conf
+      - ./adguard-home/work:/opt/adguardhome/work
+      - ./adguard-home/conf:/opt/adguardhome/conf
 
 
-  # --- Filebrowser (Files) ---
-  filebrowser:
-    container_name: filebrowser
-    image: filebrowser/filebrowser:latest
+  # --- Filebrowser-Quantum (Files) ---
+  filebrowser-quantum:
+    container_name: filebrowser-quantum
+    image: gtstef/filebrowser:latest
     <<: *defaults
-    ports:
-      - "5001:8080"
-    environment :
-      - TZ=${TZ}
-      - PUID=1000
-      - PGID=1000
+    user: "1000:1000"
     volumes:
-      - /mnt/data:/srv
-      - ./filebrowser/filebrowser.db:/filebrowser.db
-      - ./filebrowser/settings.json:/config/settings.json
-    healthcheck:
-      disable: true
+      - /mnt/data:/folder
+      - ./filebrowser-quantum:/home/filebrowser/data
+    ports:
+      - "5001:80"
 
 
   # --- Wallos (Finanz) ---
@@ -83,9 +80,6 @@ services:
     image: docker.io/vikunja/vikunja:latest
     user: "1000:1000"
     <<: *defaults
-    depends_on:
-      mailrise:
-        condition: service_started
     ports:
       - "5003:3456"
     environment:
@@ -93,28 +87,17 @@ services:
       - VIKUNJA_SERVICE_SECRET=${VIKUNJA_SECRET}
       - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5003
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
-      #- VIKUNJA_WEBHOOKS_ENABLED=true
-      #- VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
-      - VIKUNJA_MAILER_ENABLED=true
-      - VIKUNJA_MAILER_HOST=mailrise
-      - VIKUNJA_MAILER_FORCESSL=false
-      - VIKUNJA_MAILER_PORT=8025
-      - VIKUNJA_MAILER_USERNAME=todo@knuspii.net
+      - VIKUNJA_WEBHOOKS_ENABLED=true
+      - VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
+      #- VIKUNJA_MAILER_ENABLED=true
+      #- VIKUNJA_MAILER_HOST=mailrise
+      #- VIKUNJA_MAILER_FORCESSL=false
+      #- VIKUNJA_MAILER_PORT=8025
+      #- VIKUNJA_MAILER_USERNAME=todo@knuspii.net
       - VIKUNJA_DATABASE_TYPE=sqlite
       - VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db
     volumes:
       - ./vikunja:/app/vikunja/files:Z
-  # --- Mailrise (SMTP relay) ---
-  mailrise:
-    container_name: mailrise
-    image: docker.io/yoryan/mailrise:latest
-    <<: *defaults
-    dns:
-      - 1.1.1.1
-    ports:
-      - "8025:8025"
-    volumes:
-      - ./mailrise/mailrise.conf:/etc/mailrise.conf:ro,Z
 
 
   # --- Glances (Monitoring) ---
@@ -149,6 +132,9 @@ services:
       - N8N_PROTOCOL=http
       - N8N_SECURE_COOKIE=false
       - NODE_FUNCTION_ALLOW_BUILTIN=child_process
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=30
+      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=10000
     volumes:
       - ./n8n:/home/node/.n8n
     mem_limit: "2000m"
