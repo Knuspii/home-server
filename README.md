@@ -15,10 +15,9 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 |--------|-------------|
 | 🧠 Glance | Dashboard |
 | 🌐 AdGuard Home | DNS Adblock |
-| 📁 Filebrowser | File Management |
+| 📁 Filebrowser Quantum | File Management |
 | 💰 Wallos | Finance Tracking |
 | ✅ Vikunja | Task Management |
-| 📧 Mailrise | Pass Mails |
 | 📡 Glances | Monitoring |
 | 🧪 n8n | Automation |
 | 📦 minecraft-srv | Minecraft Server |
@@ -29,7 +28,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | cleanup.sh | System cleanup |
 | backup.sh | Backups (private) |
 | check_smartctl.sh | Disk health check |
-| check_docker.sh | Docker health check |
+| check_docker.sh | Containers uptime check |
 | send_pushover.sh | Send messages to myself via Pushover (private) |
 
 I also use [HomeLab-Doctor](https://github.com/Knuspii/HomeLab-Doctor)
