@@ -20,7 +20,8 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | ✅ Vikunja | Task Management |
 | 📡 Glances | Monitoring |
 | 🧪 n8n | Automation |
-| 📦 minecraft-srv | Minecraft Server |
+| 📦 Dozzle | Docker Logs |
+| 🖥️ It-Tools | Tools |
 
 ## Scripts
 | Script | Purpose |
