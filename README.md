@@ -1,4 +1,7 @@
 # 🏠 Home-Server Stack – Knuspii
+
+**[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
+
 A self-hosted home server setup running on Debian with Docker Compose. \
 I mainly use this for Taskmanagement, Backups and DNS Adblock.
 
