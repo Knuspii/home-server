@@ -35,11 +35,8 @@ services:
     container_name: adguardhome
     image: adguard/adguardhome:latest
     <<: *defaults
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "3000:3000/tcp"
-      - "5000:80/tcp"
+    # Port:5000
+    network_mode: host
     environment:
       - TZ=${TZ}
     volumes:
@@ -74,7 +71,7 @@ services:
       - ./wallos/logos:/var/www/html/images/uploads/logos
 
 
-  # --- Vikunja (Tasks) ---
+# --- Vikunja (Server) ---
   vikunja:
     container_name: vikunja
     image: docker.io/vikunja/vikunja:latest
@@ -89,11 +86,6 @@ services:
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
       - VIKUNJA_WEBHOOKS_ENABLED=true
       - VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
-      #- VIKUNJA_MAILER_ENABLED=true
-      #- VIKUNJA_MAILER_HOST=mailrise
-      #- VIKUNJA_MAILER_FORCESSL=false
-      #- VIKUNJA_MAILER_PORT=8025
-      #- VIKUNJA_MAILER_USERNAME=todo@knuspii.net
       - VIKUNJA_DATABASE_TYPE=sqlite
       - VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db
     volumes:
@@ -146,7 +138,6 @@ services:
     container_name: dozzle
     image: amir20/dozzle:latest
     <<: *defaults
-    restart: unless-stopped
     ports:
       - "5006:8080"
     environment:
@@ -157,25 +148,13 @@ services:
       - ./dozzle:/data
 
 
-  minecraft-srv:
-    container_name: minecraft-srv
-    image: itzg/minecraft-server:latest
+  # --- IT-Tools ---
+  it-tools:
+    container_name: it-tools
+    image: corentinth/it-tools:latest
     <<: *defaults
     ports:
-      - "25565:25565"
-    environment:
-      - TZ=${TZ}
-      - EULA=TRUE
-      - TYPE=FABRIC
-      - VERSION=1.20.1
-      - MEMORY=4G
-      # Old Docker-Sleeper (for < 1.21.2)
-      - ENABLE_AUTOPAUSE=true
-      - AUTOPAUSE_TIMEOUT_EST=1800
-    volumes:
-      - ./minecraft-srv:/data
-    mem_limit: "4500m"
-    cpus: "2.0"
+      - "5007:80"
 
 networks:
   default:
