@@ -1,7 +1,7 @@
 # **🏠 Home-Server Stack**
 
 [![OS](https://img.shields.io/badge/OS-Debian-C51A4A?logo=debian&logoColor=white&style=flat-square)](https://www.debian.org)
-[![Docker](https://img.shields.io/badge/Docker_Compose-9_Services-2496ED?logo=docker&logoColor=white&style=flat-square)](./stack/)
+[![Docker](https://img.shields.io/badge/Docker_Compose-11_Services-2496ED?logo=docker&logoColor=white&style=flat-square)](./stack/)
 
 **[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
 
