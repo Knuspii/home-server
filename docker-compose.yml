@@ -20,6 +20,7 @@ services:
     container_name: glance
     image: glanceapp/glance:latest
     <<: *defaults
+    user: "1000:1000"
     ports:
       - "80:8080"
     volumes:
@@ -71,21 +72,26 @@ services:
       - ./wallos/logos:/var/www/html/images/uploads/logos
 
 
-# --- Vikunja (Server) ---
+  # --- Vikunja (Server) ---
   vikunja:
     container_name: vikunja
     image: docker.io/vikunja/vikunja:latest
-    user: "1000:1000"
     <<: *defaults
+    user: "1000:1000"
     ports:
       - "5003:3456"
     environment:
       - TZ=${TZ}
       - VIKUNJA_SERVICE_SECRET=${VIKUNJA_SECRET}
-      - VIKUNJA_SERVICE_PUBLICURL=http://home-server:5003
+      - VIKUNJA_SERVICE_PUBLICURL=http://192.168.178.100:5003
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
-      - VIKUNJA_WEBHOOKS_ENABLED=true
-      - VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
+      #- VIKUNJA_WEBHOOKS_ENABLED=true
+      #- VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
+      - VIKUNJA_MAILER_ENABLED=true
+      - VIKUNJA_MAILER_HOST=mailrise
+      - VIKUNJA_MAILER_FORCESSL=false
+      - VIKUNJA_MAILER_PORT=8025
+      - VIKUNJA_MAILER_USERNAME=todo@knuspii.net
       - VIKUNJA_DATABASE_TYPE=sqlite
       - VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db
     volumes:
@@ -114,6 +120,7 @@ services:
     container_name: n8n
     image: n8nio/n8n:latest
     <<: *defaults
+    user: "1000:1000"
     ports:
       - "5005:5678"
     environment:
@@ -153,8 +160,30 @@ services:
     container_name: it-tools
     image: corentinth/it-tools:latest
     <<: *defaults
+    #user: "1000:1000"
     ports:
       - "5007:80"
+
+
+  # --- Uptime-Kuma (Uptime Dashboard) ---
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:2
+    <<: *defaults
+    ports:
+      - "5008:3001"
+    volumes:
+      - ./uptime-kuma:/app/data
+
+
+  # --- Cloudflare Tunnel ---
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:latest
+    <<: *defaults
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run
 
 networks:
   default:

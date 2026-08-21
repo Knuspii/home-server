@@ -3,8 +3,6 @@
 # Run monthly via cron:
 # 0 0 1 * * bash /srv/cleanup.sh
 
-set -euo pipefail
-
 if [ "$EUID" -ne 0 ]; then
   echo "Error: This script must be run as root."
   exit 1
