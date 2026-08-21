@@ -28,6 +28,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | 🧪 n8n | Automation |
 | 📦 Dozzle | Docker Logs |
 | 🖥️ It-Tools | Tools |
+| 📊 Uptime-Kuma | Status-Page |
 
 ## Scripts
 | Script | Purpose |
