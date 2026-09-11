@@ -15,21 +15,32 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-for DISK in "${DISKS[@]}"; do
-    # Extract VALUE from the first matching wear/lifespan ID
-    RAW_VAL=$(/usr/sbin/smartctl -A "$DISK" 2>/dev/null | awk '$1 ~ /^(201|230|231|232|233)$/ {print $4; exit}')
+echo "--- Checking Disks ---"
 
-    if [ -z "$RAW_VAL" ]; then
-        echo "$DISK: Could not read Lifetime_Remaining%"
+for DISK in "${DISKS[@]}"; do
+    # Check if the disk device exists
+    if [ ! -b "$DISK" ]; then
+        error="[ERROR] $DISK does not exist."
+        echo "${error}"
+        bash /srv/send_pushover.sh "${error}"
         continue
     fi
 
-    # Strip leading zeros
-    LIFETIME=$((10#$RAW_VAL))
+    # Read the overall SMART health status (PASSED or FAILED)
+    STATUS=$(/usr/sbin/smartctl -H "$DISK" 2>/dev/null | grep -Ei "health status|test result" | awk -F: '{print $2}' | xargs)
 
-    echo "$DISK Lifetime Remaining: ${LIFETIME}%"
-
-    if [ "$LIFETIME" -lt 20 ]; then
-        bash /srv/send_pushover.sh "$DISK Lifetime Low: ${LIFETIME}% remaining"
+    # Evaluate the status result
+    if [ "$STATUS" = "PASSED" ] || [ "$STATUS" = "OK" ]; then
+        echo "[OK] $DISK: Healthy ($STATUS). No action needed."
+    elif [ -z "$STATUS" ]; then
+	error="[WARNING] $DISK: SMART status could not be read."
+        echo "${error}"
+	bash /srv/send_pushover.sh "${error}"
+    else
+	error="[CRITICAL] $DISK: FAILED ($STATUS)! REPLACE THIS DRIVE IMMEDIATELY."
+        echo "${error}"
+        bash /srv/send_pushover.sh "${error}"
     fi
 done
+
+echo "-----------------------"

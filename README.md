@@ -1,7 +1,7 @@
 # **🏠 Home-Server Stack**
 
 [![OS](https://img.shields.io/badge/OS-Debian-C51A4A?logo=debian&logoColor=white&style=flat-square)](https://www.debian.org)
-[![Docker](https://img.shields.io/badge/Docker_Compose-11_Services-2496ED?logo=docker&logoColor=white&style=flat-square)](./stack/)
+[![Docker](https://img.shields.io/badge/Docker_Compose-10_Services-2496ED?logo=docker&logoColor=white&style=flat-square)](./stack/)
 
 **[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
 
@@ -20,15 +20,15 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | Service | Description |
 |--------|-------------|
 | 🧠 Glance | Dashboard |
-| 🌐 AdGuard Home | DNS Adblock |
+| ⛔️ AdGuard Home | DNS Adblock |
 | 📁 Filebrowser Quantum | File Management |
 | 💰 Wallos | Finance Tracking |
 | ✅ Vikunja | Task Management |
 | 📡 Glances | Monitoring |
 | 🧪 n8n | Automation |
-| 📦 Dozzle | Docker Logs |
-| 🖥️ It-Tools | Tools |
 | 📊 Uptime-Kuma | Status-Page |
+| 🔔 Gotify | Notifications |
+| 🌐 Cloudflared | Cloudflare Tunnel |
 
 ## Scripts
 | Script | Purpose |
@@ -37,7 +37,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | backup.sh | Backups (private) |
 | check_smartctl.sh | Disk health check |
 | check_docker.sh | Containers uptime check |
-| send_pushover.sh | Send messages to myself via Pushover (private) |
+| send_gotify.sh | Send messages to myself via Gotify (private) |
 
 I also use [HomeLab-Doctor](https://github.com/Knuspii/HomeLab-Doctor)
 

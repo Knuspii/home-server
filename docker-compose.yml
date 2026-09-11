@@ -32,8 +32,8 @@ services:
 
 
   # --- AdGuard Home (DNS & Adblock) ---
-  adguard:
-    container_name: adguardhome
+  adguard-home:
+    container_name: adguard-home
     image: adguard/adguardhome:latest
     <<: *defaults
     # Port:5000
@@ -58,7 +58,7 @@ services:
       - "5001:80"
 
 
-  # --- Wallos (Finanz) ---
+  # --- Wallos (Finances) ---
   wallos:
     container_name: wallos
     image: bellamy/wallos:latest
@@ -98,19 +98,19 @@ services:
       - ./vikunja:/app/vikunja/files:Z
 
 
-  # --- Glances (Monitoring) ---
+    # --- Glances (Monitoring) ---
   glances:
     container_name: glances
     image: nicolargo/glances:latest-full
     <<: *defaults
     ports:
-      - "5004:61208"
+    - "5004:61208"
     environment:
-      - TZ=${TZ}
-      - GLANCES_OPT=-w -B 0.0.0.0 --config /etc/glances/glances.conf
+    - TZ=${TZ}
+    - GLANCES_OPT=-w -B 0.0.0.0 --config /etc/glances/glances.conf
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./glances/glances.conf:/etc/glances/glances.conf:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - ./glances/glances.conf:/etc/glances/glances.conf:ro
     pid: host
     read_only: true
 
@@ -140,40 +140,44 @@ services:
     cpus: "2.0"
 
 
-  # --- Dozzle (Docker Logs) ---
-  dozzle:
-    container_name: dozzle
-    image: amir20/dozzle:latest
-    <<: *defaults
-    ports:
-      - "5006:8080"
-    environment:
-      - TZ=${TZ}
-      - DOZZLE_NO_ANALYTICS=true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./dozzle:/data
-
-
-  # --- IT-Tools ---
-  it-tools:
-    container_name: it-tools
-    image: corentinth/it-tools:latest
-    <<: *defaults
-    #user: "1000:1000"
-    ports:
-      - "5007:80"
-
-
   # --- Uptime-Kuma (Uptime Dashboard) ---
   uptime-kuma:
     container_name: uptime-kuma
     image: louislam/uptime-kuma:2
     <<: *defaults
     ports:
-      - "5008:3001"
+      - "5006:3001"
     volumes:
       - ./uptime-kuma:/app/data
+    mem_limit: "2000m"
+    cpus: "2.0"
+
+
+  # --- Gotify (Notifications) ---
+  gotify:
+    container_name: gotify
+    image: gotify/server
+    <<: *defaults
+    ports:
+      - "5007:80"
+    environment:
+      - TZ=${TZ}
+      - GOTIFY_SERVER_SECURECOOKIE=true
+    volumes:
+      - ./gotify:/app/data
+
+
+  # --- TESTING ---
+  gatus:
+    container_name: gatus
+    image: twinproduction/gatus:latest
+    restart: unless-stopped
+    ports:
+      - "5008:8080"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ./gatus:/config
 
 
   # --- Cloudflare Tunnel ---
