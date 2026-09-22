@@ -12,7 +12,7 @@ x-defaults: &defaults
     driver: json-file
     options:
       max-size: "5m"
-      max-file: "1"
+      max-file: "3"
 
 services:
   # --- Homepage (Dashboard) ---
@@ -87,32 +87,30 @@ services:
       - VIKUNJA_SERVICE_ENABLEREGISTRATION=false
       #- VIKUNJA_WEBHOOKS_ENABLED=true
       #- VIKUNJA_OUTGOINGREQUESTS_ALLOWNONROUTABLEIPS=true
-      - VIKUNJA_MAILER_ENABLED=true
-      - VIKUNJA_MAILER_HOST=mailrise
-      - VIKUNJA_MAILER_FORCESSL=false
-      - VIKUNJA_MAILER_PORT=8025
-      - VIKUNJA_MAILER_USERNAME=todo@knuspii.net
+      #- VIKUNJA_MAILER_ENABLED=true
+      #- VIKUNJA_MAILER_HOST=mailrise
+      #- VIKUNJA_MAILER_FORCESSL=false
+      #- VIKUNJA_MAILER_PORT=8025
+      #- VIKUNJA_MAILER_USERNAME=todo@knuspii.net
       - VIKUNJA_DATABASE_TYPE=sqlite
       - VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db
     volumes:
       - ./vikunja:/app/vikunja/files:Z
 
 
-    # --- Glances (Monitoring) ---
-  glances:
-    container_name: glances
-    image: nicolargo/glances:latest-full
+  # --- Uptime-Kuma (Uptime Dashboard) ---
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:2
     <<: *defaults
     ports:
-    - "5004:61208"
-    environment:
-    - TZ=${TZ}
-    - GLANCES_OPT=-w -B 0.0.0.0 --config /etc/glances/glances.conf
+      - "5004:3001"
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - ./glances/glances.conf:/etc/glances/glances.conf:ro
-    pid: host
-    read_only: true
+      - ./uptime-kuma:/app/data
+    networks:
+      - public
+    mem_limit: "2000m"
+    cpus: "2.0"
 
 
   # --- n8n (Workflow Automation) ---
@@ -130,25 +128,11 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_SECURE_COOKIE=false
-      - NODE_FUNCTION_ALLOW_BUILTIN=child_process
       - EXECUTIONS_DATA_PRUNE=true
       - EXECUTIONS_DATA_MAX_AGE=30
       - EXECUTIONS_DATA_PRUNE_MAX_COUNT=10000
     volumes:
       - ./n8n:/home/node/.n8n
-    mem_limit: "2000m"
-    cpus: "2.0"
-
-
-  # --- Uptime-Kuma (Uptime Dashboard) ---
-  uptime-kuma:
-    container_name: uptime-kuma
-    image: louislam/uptime-kuma:2
-    <<: *defaults
-    ports:
-      - "5006:3001"
-    volumes:
-      - ./uptime-kuma:/app/data
     mem_limit: "2000m"
     cpus: "2.0"
 
@@ -159,25 +143,32 @@ services:
     image: gotify/server
     <<: *defaults
     ports:
-      - "5007:80"
+      - "5006:80"
     environment:
       - TZ=${TZ}
       - GOTIFY_SERVER_SECURECOOKIE=true
     volumes:
       - ./gotify:/app/data
+    networks:
+      - public
 
 
-  # --- TESTING ---
-  gatus:
-    container_name: gatus
-    image: twinproduction/gatus:latest
-    restart: unless-stopped
+  # --- Vaultwarden (Secrets) ---
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    <<: *defaults
     ports:
-      - "5008:8080"
+      - "5007:80"
     environment:
       - TZ=${TZ}
+      - DOMAIN=https://vault.knuspii.net
+      - SIGNUPS_ALLOWED=false
+      - ADMIN_TOKEN=${VAULTWARDEN_TOKEN}
     volumes:
-      - ./gatus:/config
+      - ./vaultwarden/data:/data
+    networks:
+      - public
 
 
   # --- Cloudflare Tunnel ---
@@ -188,8 +179,14 @@ services:
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     command: tunnel --no-autoupdate run
+    networks:
+      - public
 
 networks:
   default:
     name: homeserver_network
+    driver: bridge
+
+  public:
+    name: homeserver_public
     driver: bridge
