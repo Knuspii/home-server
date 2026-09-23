@@ -1,11 +1,11 @@
 # **🏠 Home-Server Stack**
 
 [![OS](https://img.shields.io/badge/OS-Debian-C51A4A?logo=debian&logoColor=white&style=flat-square)](https://www.debian.org)
-[![Docker](https://img.shields.io/badge/Docker_Compose-10_Services-2496ED?logo=docker&logoColor=white&style=flat-square)](./stack/)
+[![Docker](https://img.shields.io/badge/Podman-8_Services-2496ED?logo=podman&logoColor=white&style=flat-square)](./stack/)
 
 **[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
 
-A self-hosted home server setup running on Debian with Docker Compose. \
+A self-hosted home server setup running on Debian with Podman. \
 I mainly use this for Taskmanagement, Backups and DNS Adblock.
 
 ---
@@ -21,12 +21,11 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 |--------|-------------|
 | 🧠 Glance | Dashboard |
 | ⛔️ AdGuard Home | DNS Adblock |
-| 📁 Filebrowser Quantum | File Management |
-| 💰 Wallos | Finance Tracking |
 | ✅ Vikunja | Task Management |
-| 📡 Glances | Monitoring |
-| 🧪 n8n | Automation |
+| 🧪 n8n | Automation Scripts |
+| 📁 Filebrowser Quantum | File Management |
 | 📊 Uptime-Kuma | Status-Page |
+| 🔒 Vaultwarden | Password Manager |
 | 🔔 Gotify | Notifications |
 | 🌐 Cloudflared | Cloudflare Tunnel |
 
@@ -35,11 +34,11 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 |--------|---------|
 | cleanup.sh | System cleanup |
 | backup.sh | Backups (private) |
-| check_smartctl.sh | Disk health check |
-| check_docker.sh | Containers uptime check |
+| check_health.sh | Complete health check |
+| check_podman.sh | Containers uptime check |
 | send_gotify.sh | Send messages to myself via Gotify (private) |
 
-I also use [HomeLab-Doctor](https://github.com/Knuspii/HomeLab-Doctor)
+I also use [Server-VibeCheck](https://github.com/Knuspii/Server-VibeCheck)
 
 ---
 
@@ -50,8 +49,10 @@ sudo apt install htop ssh rsync ncdu curl tree jq smartmontools fastfetch at mda
 ```
 
 ## 📊 Notes
-- Designed for local network use
 - Secrets are stored in `.env` (not committed obviously)
+- Rootless by default — containers run as a regular user, not as root.
+- Better isolation — no central Docker daemon running with root privileges.
+- Easy to automate — containers are started through simple shell scripts.
 
 ---
 
