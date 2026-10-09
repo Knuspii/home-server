@@ -33,7 +33,15 @@ init_script() {
         exit 1
     fi
 
+    if [ -z "${IMAGE:-}" ]; then
+        echo "IMAGE ist nicht gesetzt."
+        exit 1
+    fi
+
     echo "* Restarting ${NAME}..."
+    echo "* Pulling ${IMAGE}..."
+
+    podman_user pull "$IMAGE"
 }
 
 prepare_dir() {

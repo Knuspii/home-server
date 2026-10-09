@@ -6,16 +6,12 @@
 set -euo pipefail
 
 PODMAN_USER="user"
+source /srv/logging.sh
 
 if [ "$EUID" -ne 0 ]; then
   echo "Error: This script must be run as root."
   exit 1
 fi
-
-LOGFILE="/srv/logs/cleanup.log"
-rm -f "$LOGFILE"
-exec > >(tee -a "$LOGFILE") 2>&1
-date
 
 get_free_space() {
     df / --output=avail | tail -1
@@ -35,8 +31,8 @@ fi
 # 2. Podman cleanup
 if command -v podman >/dev/null 2>&1; then
     echo "[PODMAN] Cleaning unused resources..."
-    sudo -u $PODMAN_USER podman system prune -a -f > /dev/null
-    sudo -u $PODMAN_USER podman volume prune -f > /dev/null
+    sudo -iu $PODMAN_USER podman system prune -a -f > /dev/null
+    sudo -iu $PODMAN_USER podman volume prune -f > /dev/null
 fi
 
 # 3. System logs

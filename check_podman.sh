@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
+# Check if podman containers are down
+# Run via cron:
+# */30 * * * * bash /srv/check_podman.sh
 
-source /srv/podman/.env
+OUTPUT="/srv/logs/podman.log"
+source /srv/logging.sh
 
 # Check running containers
-FAILED=$(sudo -u user podman ps -a --format "{{.Names}} {{.Status}}" | grep -v "Up" | awk '{print $1}')
+FAILED=$(sudo -iu user podman ps -a --format "{{.Names}} {{.Status}}" | grep -v "Up" | awk '{print $1}')
 
 if [ -z "$FAILED" ]; then
     # ALL OK (status=up)
-    MSG="All_OK"
-    curl -m 10 --retry 5 "${PODMAN_PUSH}?status=up&msg=${MSG}" > /dev/null
-    echo "Sending UP: $MSG"
+    echo "UP!"
+    echo up > $OUTPUT
 else
     # FAILED (status=down)
-    MSG="FAILED:_${FAILED//$'\n'/,_}"
-    curl -m 10 --retry 5 "${PODMAN_PUSH}?status=down&msg=${MSG}" > /dev/null
-    echo "Sending DOWN: $MSG"
+    echo "DOWN!"
+    echo down > $OUTPUT
+    bash /srv/send_gotify.sh "Podman Container down!"
 fi

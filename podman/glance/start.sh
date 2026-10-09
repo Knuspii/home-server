@@ -2,6 +2,7 @@
 set -e
 
 NAME=glance
+IMAGE=glanceapp/glance:latest
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$SCRIPT_DIR/../core.sh"
@@ -16,7 +17,7 @@ run_container \
     --publish 80:8080 \
     -e TZ="$TZ" \
     -e TOKEN_FILE=/app/config/secret \
-    -v "${SCRIPT_DIR}/data:/app/config:rw,Z" \
-    glanceapp/glance:latest
+    -v "${SCRIPT_DIR}/data:/app/config:ro" \
+    "$IMAGE"
 
 finish
