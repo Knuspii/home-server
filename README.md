@@ -32,9 +32,11 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 ## Scripts
 | Script | Purpose |
 |--------|---------|
+| logging.sh | Universal logger |
 | cleanup.sh | System cleanup |
 | backup.sh | Backups (private) |
 | check_podman.sh | Containers uptime check |
+| check_smartctl.sh | Check disks health |
 | send_gotify.sh | Send messages to myself via Gotify (private) |
 
 I also use [Server-VibeCheck](https://github.com/Knuspii/Server-VibeCheck)
