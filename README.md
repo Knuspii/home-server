@@ -1,7 +1,7 @@
 # **🏠 Home-Server Stack**
 
 [![OS](https://img.shields.io/badge/OS-Debian-C51A4A?logo=debian&logoColor=white&style=flat-square)](https://www.debian.org)
-[![Docker](https://img.shields.io/badge/Podman-10_Services-2496ED?logo=podman&logoColor=white&style=flat-square)](./stack/)
+[![Docker](https://img.shields.io/badge/Podman-9_Services-2496ED?logo=podman&logoColor=white&style=flat-square)](./stack/)
 
 **[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
 
@@ -20,14 +20,14 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | Service | Description |
 |--------|-------------|
 | 🧠 Glance | Dashboard |
-| ⛔️ AdGuard Home | DNS Adblock |
-| ✅ Vikunja | Task Management |
-| 📁 Filebrowser Quantum | File Management |
-| 📊 Uptime-Kuma | Status-Page |
-| ⛓️ Caddy | Reverse-Proxy |
+| ⛔️ AdGuard-Home | DNS Adblock |
 | 🔒 Vaultwarden | Password Manager |
-| 🔔 Gotify | Notifications |
+| ✅ Vikunja | Task Management |
+| 💰 Wallos | Subscription tracker |
+| 📁 Filebrowser-Quantum | File Management |
 | 🌐 Cloudflared | Cloudflare Tunnel |
+| ⛓️ Caddy | Reverse-Proxy |
+| 🔔 Gotify | Notifications |
 
 ## Scripts
 | Script | Purpose |
