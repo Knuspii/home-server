@@ -13,8 +13,7 @@ stop_container
 
 run_container \
     --userns=keep-id \
-    --cap-add=NET_BIND_SERVICE \
-    --publish 5004:80 \
+    --publish 5004:8080 \
     -v /mnt/data:/folder:rw \
     -v "${SCRIPT_DIR}/data:/home/filebrowser/data:rw" \
     "$IMAGE"

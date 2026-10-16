@@ -3,7 +3,7 @@
 # Run via cron:
 # */30 * * * * bash /srv/check_podman.sh
 
-OUTPUT="/srv/logs/podman.log"
+OUTPUT="/srv/logs/podman_status.txt"
 source /srv/logging.sh
 
 # Check running containers
@@ -17,5 +17,5 @@ else
     # FAILED (status=down)
     echo "DOWN!"
     echo down > $OUTPUT
-    bash /srv/send_gotify.sh "Podman Container down!"
+    bash /srv/send_gotify.sh "Podman Container down! $FAILED"
 fi

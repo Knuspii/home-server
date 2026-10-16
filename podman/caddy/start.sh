@@ -13,10 +13,12 @@ prepare_dir "$SCRIPT_DIR/data"
 stop_container
 
 run_container \
+    --publish 8000:80/tcp \
     --publish 443:443/tcp \
     --publish 443:443/udp \
     -v "${SCRIPT_DIR}/data/Caddyfile:/etc/caddy/Caddyfile:ro" \
     -v "${SCRIPT_DIR}/data:/data:rw" \
+    -v "${SCRIPT_DIR}/www:/srv/www:ro" \
     --add-host=host.containers.internal:host-gateway \
     "$IMAGE"
 
