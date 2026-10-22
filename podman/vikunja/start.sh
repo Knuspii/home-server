@@ -21,10 +21,10 @@ run_container \
     -e VIKUNJA_DATABASE_TYPE=sqlite \
     -e VIKUNJA_DATABASE_PATH=/app/vikunja/files/vikunja.db \
     -e VIKUNJA_MAILER_ENABLED=true \
-    -e VIKUNJA_MAILER_HOST=mailrise \
+    -e VIKUNJA_MAILER_HOST=host.containers.internal \
     -e VIKUNJA_MAILER_FORCESSL=false \
     -e VIKUNJA_MAILER_PORT=8025 \
-    -e VIKUNJA_MAILER_USERNAME=todo@knuspii.net \
+    -e VIKUNJA_MAILER_USERNAME=mail@mailrise.home \
     -v "${SCRIPT_DIR}/data:/app/vikunja/files:rw" \
     "$IMAGE"
 

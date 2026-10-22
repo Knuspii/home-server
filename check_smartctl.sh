@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Script for checking SMART remaining lifespan
-# Run weekly via cron:
-# 0 0 * * 7 bash /srv/check_smartctl.sh
+# Run daily via cron:
+# 0 0 * * * bash /srv/check_smartctl.sh
 
 DISKS=("/dev/sda" "/dev/sdb" "/dev/sdc")
 source /srv/logging.sh
@@ -19,7 +19,7 @@ for DISK in "${DISKS[@]}"; do
     if [ ! -b "$DISK" ]; then
         error="[ERROR] $DISK does not exist."
         echo "${error}"
-        bash /srv/send_pushover.sh "${error}"
+        bash /srv/mailrise.sh "${error}"
         continue
     fi
 
@@ -32,11 +32,11 @@ for DISK in "${DISKS[@]}"; do
     elif [ -z "$STATUS" ]; then
 	error="[WARNING] $DISK: SMART status could not be read."
         echo "${error}"
-	bash /srv/send_pushover.sh "${error}"
+	bash /srv/mailrise.sh "${error}"
     else
 	error="[CRITICAL] $DISK: FAILED ($STATUS)! REPLACE THIS DRIVE IMMEDIATELY."
         echo "${error}"
-        bash /srv/send_pushover.sh "${error}"
+        bash /srv/mailrise.sh "${error}"
     fi
 done
 

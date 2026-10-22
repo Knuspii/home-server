@@ -12,7 +12,7 @@ prepare_dir "$SCRIPT_DIR/data"
 stop_container
 
 run_container \
-    --publish 5003:80 \
+    --publish 5004:80 \
     -e TZ="$TZ" \
     -v "${SCRIPT_DIR}/data:/var/www/html/db" \
     "$IMAGE"

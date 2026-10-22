@@ -23,11 +23,11 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | ⛔️ AdGuard-Home | DNS Adblock |
 | 🔒 Vaultwarden | Password Manager |
 | ✅ Vikunja | Task Management |
-| 💰 Wallos | Subscription tracker |
 | 📁 Filebrowser-Quantum | File Management |
+| 💰 Wallos | Subscription Tracker |
 | 🌐 Cloudflared | Cloudflare Tunnel |
 | ⛓️ Caddy | Reverse-Proxy |
-| 🔔 Gotify | Notifications |
+| 🔔 Mailrise | Notifications |
 
 ## Scripts
 | Script | Purpose |
@@ -37,7 +37,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | backup.sh | Backups (private) |
 | check_podman.sh | Containers uptime check |
 | check_smartctl.sh | Check disks health |
-| send_gotify.sh | Send messages to myself via Gotify (private) |
+| mailrise.sh | Send messages to myself via Mailrise |
 
 I also use [Server-VibeCheck](https://github.com/Knuspii/Server-VibeCheck)
 

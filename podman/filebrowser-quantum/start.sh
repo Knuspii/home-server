@@ -13,7 +13,7 @@ stop_container
 
 run_container \
     --userns=keep-id \
-    --publish 5004:8080 \
+    --publish 5003:8080 \
     -v /mnt/data:/folder:rw \
     -v "${SCRIPT_DIR}/data:/home/filebrowser/data:rw" \
     "$IMAGE"

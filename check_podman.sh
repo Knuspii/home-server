@@ -17,5 +17,5 @@ else
     # FAILED (status=down)
     echo "DOWN!"
     echo down > $OUTPUT
-    bash /srv/send_gotify.sh "Podman Container down! $FAILED"
+    bash /srv/mailrise.sh "Podman Container down! $FAILED"
 fi
