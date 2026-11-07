@@ -26,7 +26,7 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | 📁 Filebrowser-Quantum | File Management |
 | 💰 Wallos | Subscription Tracker |
 | ⛓️ Caddy | Reverse-Proxy and Internal SSL |
-| 🩺 MicroBin| Text and File Sharing |
+| 📝 MicroBin| Text and File Sharing |
 | 🩺 Healthchecks.io | Monitor Background Jobs |
 | 🌐 Cloudflared | Cloudflare Tunnel |
 
