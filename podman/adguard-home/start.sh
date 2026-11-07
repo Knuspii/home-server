@@ -14,6 +14,7 @@ stop_container
 run_container \
     --network host \
     -e TZ="$TZ" \
+    --security-opt=no-new-privileges \
     -v "${SCRIPT_DIR}/data/work:/opt/adguardhome/work:rw" \
     -v "${SCRIPT_DIR}/data/conf:/opt/adguardhome/conf:rw" \
     "$IMAGE"

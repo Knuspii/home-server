@@ -2,7 +2,7 @@
 set -e
 
 NAME=glance
-IMAGE=glanceapp/glance:latest
+IMAGE=docker.io/glanceapp/glance:latest
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$SCRIPT_DIR/../core.sh"
@@ -13,8 +13,9 @@ stop_container
 
 run_container \
     --userns=keep-id \
-    --read-only \
     --publish 80:8080 \
+    --read-only \
+    --security-opt=no-new-privileges \
     -e TZ="$TZ" \
     -e TOKEN_FILE=/app/config/secret \
     -v "${SCRIPT_DIR}/data:/app/config:ro" \

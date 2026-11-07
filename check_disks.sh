@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Script for checking SMART remaining lifespan
+# Script for checking disks health
 # Run daily via cron:
-# 0 0 * * * bash /srv/check_smartctl.sh
+# 0 0 * * * bash /srv/check_disks.sh
 
 DISKS=("/dev/sda" "/dev/sdb" "/dev/sdc")
-source /srv/logging.sh
+source /srv/podman/.env
+#source /srv/logging.sh
 
 #--- ROOT-CHECK ---
 if [ "$EUID" -ne 0 ]; then
@@ -19,10 +20,8 @@ for DISK in "${DISKS[@]}"; do
     if [ ! -b "$DISK" ]; then
         error="[ERROR] $DISK does not exist."
         echo "${error}"
-        bash /srv/mailrise.sh "${error}"
-        continue
+        exit 1
     fi
-
     # Read the overall SMART health status (PASSED or FAILED)
     STATUS=$(/usr/sbin/smartctl -H "$DISK" 2>/dev/null | grep -Ei "health status|test result" | awk -F: '{print $2}' | xargs)
 
@@ -32,12 +31,12 @@ for DISK in "${DISKS[@]}"; do
     elif [ -z "$STATUS" ]; then
 	error="[WARNING] $DISK: SMART status could not be read."
         echo "${error}"
-	bash /srv/mailrise.sh "${error}"
+        exit 1
     else
 	error="[CRITICAL] $DISK: FAILED ($STATUS)! REPLACE THIS DRIVE IMMEDIATELY."
         echo "${error}"
-        bash /srv/mailrise.sh "${error}"
+        exit 1
     fi
 done
-
 echo "----------------------"
+curl -m 10 --retry 5 "${HC_URL}/disk-health"

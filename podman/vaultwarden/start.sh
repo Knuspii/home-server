@@ -13,8 +13,9 @@ stop_container
 
 run_container \
     --publish 5001:80 \
+    --security-opt=no-new-privileges \
     -e TZ="$TZ" \
-    -e DOMAIN="https://vault.home" \
+    -e DOMAIN="https://vault.home.knuspii.net" \
     -e SIGNUPS_ALLOWED=false \
     -e ADMIN_TOKEN="$VAULTWARDEN_TOKEN" \
     -e TRASH_AUTO_DELETE_DAYS=30 \

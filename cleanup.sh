@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 # Server Cleanup Script (Podman + System)
-# Run monthly via cron:
-# 0 0 1 * * bash /srv/cleanup.sh
 
 set -euo pipefail
 
 PODMAN_USER="user"
+source /srv/podman/.env
 source /srv/logging.sh
 
 if [ "$EUID" -ne 0 ]; then
@@ -55,3 +54,5 @@ else
     RECLAIMED_HUMAN=$(numfmt --to=iec --suffix=B "$((RECLAIMED_KB * 1024))")
     echo "Space reclaimed: $RECLAIMED_HUMAN"
 fi
+
+curl -m 10 --retry 5 ${HC_URL}/cleanup

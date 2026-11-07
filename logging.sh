@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Universal logging script
 
 LOG_DIR="/srv/logs"
 mkdir -p "$LOG_DIR"

@@ -11,6 +11,8 @@ stop_container
 
 run_container \
     --network host \
+    --read-only \
+    --security-opt=no-new-privileges \
     -e TUNNEL_TOKEN="$TUNNEL_TOKEN" \
     "$IMAGE" \
     tunnel --no-autoupdate run

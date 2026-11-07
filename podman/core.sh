@@ -11,14 +11,15 @@ fi
 
 require_root() {
     if [ "$(id -u)" -ne 0 ]; then
-        echo "Dieses Script muss als root ausgeführt werden."
+        echo "This script must be run as root (using sudo)."
         exit 1
     fi
 
     PODMAN_USER="${SUDO_USER:-}"
 
     if [ -z "$PODMAN_USER" ] || [ "$PODMAN_USER" = "root" ]; then
-        echo "Bitte mit sudo ausführen, z.B.: sudo bash start.sh"
+        echo "A non-root user is required to run Podman rootless."
+        echo "Please execute this script using sudo (e.g. sudo bash start.sh)."
         exit 1
     fi
 
@@ -29,18 +30,17 @@ require_root() {
 
 init_script() {
     if [ -z "${NAME:-}" ]; then
-        echo "NAME ist nicht gesetzt."
+        echo "NAME not set."
         exit 1
     fi
 
     if [ -z "${IMAGE:-}" ]; then
-        echo "IMAGE ist nicht gesetzt."
+        echo "IMAGE not set."
         exit 1
     fi
 
     echo "* Restarting ${NAME}..."
     echo "* Pulling ${IMAGE}..."
-
     podman_user pull "$IMAGE"
 }
 

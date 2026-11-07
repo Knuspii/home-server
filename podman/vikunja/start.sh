@@ -14,6 +14,7 @@ stop_container
 run_container \
     --userns=keep-id \
     --publish 5002:3456 \
+    --security-opt=no-new-privileges \
     -e TZ="$TZ" \
     -e VIKUNJA_SERVICE_SECRET="$VIKUNJA_SECRET" \
     -e VIKUNJA_SERVICE_ENABLEREGISTRATION=false \
