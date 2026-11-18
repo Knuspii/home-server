@@ -1,7 +1,7 @@
 # **🏠 Home-Server Stack**
 
 [![OS](https://img.shields.io/badge/OS-Debian-C51A4A?logo=debian&logoColor=white&style=flat-square)](https://www.debian.org)
-[![Docker](https://img.shields.io/badge/Podman-10_Services-2496ED?logo=podman&logoColor=white&style=flat-square)](./stack/)
+[![Docker](https://img.shields.io/badge/Podman-9_Services-2496ED?logo=podman&logoColor=white&style=flat-square)](./stack/)
 
 **[Selfhosted Apps](#selfhosted-apps)** • **[Scripts](#scripts)**
 
@@ -26,18 +26,15 @@ I mainly use this for Taskmanagement, Backups and DNS Adblock.
 | 📁 Filebrowser-Quantum | File Management |
 | 💰 Wallos | Subscription Tracker |
 | ⛓️ Caddy | Reverse-Proxy and Internal SSL |
-| 📝 MicroBin| Text and File Sharing |
 | 🩺 Healthchecks.io | Monitor Background Jobs |
 | 🌐 Cloudflared | Cloudflare Tunnel |
 
 ## Scripts
 | Script | Purpose |
 |--------|---------|
-| logging.sh | Universal logger |
-| cleanup.sh | System cleanup |
+| daily_janitor.sh | Daily checks and cleanup |
 | backup.sh | Backups (private) |
 | check_podman.sh | Containers uptime check |
-| check_disks.sh | Check disks health |
 | pushover.sh | Send messages to myself via Pushover |
 
 I also use [Server-VibeCheck](https://github.com/Knuspii/Server-VibeCheck)
